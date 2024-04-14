@@ -62,6 +62,7 @@ jobs:
           path: |
             ${{ matrix.service }}/output.txt
             ${{ matrix.service }}/service.txt
+            ${{ matrix.service }}/VERSION
   release:
     needs: build-containers
     runs-on: ubuntu-latest
@@ -77,7 +78,7 @@ jobs:
           for service in $(ls -1 ./artifacts); do
             output=$(cat ./artifacts/$service/output.txt)
             ls -l .
-            echo "## $service $BASE_TAG$(cat `$service/VERSION`)" >> release_text.md
+            echo "## $service $BASE_TAG$(cat `./artifacts/$service/VERSION`)" >> release_text.md
             echo "Following image was uploaded: \`$output\`" >> release_text.md
           done
       - name: Check done
