@@ -88,7 +88,7 @@ jobs:
             echo "This is an automated release. Following new service versions where uploaded" > release_body.md
             cat release_text.md >> release_body.md
             echo "release=true" >> $GITHUB_OUTPUT
-            echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H:%M')" >> $GITHUB_ENV
+            echo "CURRENT_DATE=$(date +'%Y-%m-%d--%H-%M')" >> $GITHUB_ENV
           fi
       - name: Release changes
         if: steps.check-if-release.outputs.release == 'true'
