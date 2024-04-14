@@ -89,6 +89,6 @@ jobs:
             echo "release=false" >> $GITHUB_OUTPUT
           fi
       - name: Create release
-        if: steps.check-if-release.outputs.release
+        if: steps.check-if-release.outputs.release == 'true'
         run:
           cat release_text.txt
