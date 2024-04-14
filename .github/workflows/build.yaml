@@ -1,0 +1,81 @@
+name: build-containers
+run-name: Building service containers
+on:
+  push:
+
+env:
+  BASE_IMAGE: cccs/assemblyline-v4-service-base:4.5.stable
+  REGISTRY: ghcr.io
+  PUSH_REGISTRY: ghcr.io
+  BASE_TAG: 4.5.0.stable
+  MANIFEST_REGISTRY: ghcr.io/
+
+jobs:
+  discover-services:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Discover directories with Dockerfiles
+        id: services
+        run: |
+          echo "services=$(find . -type f -name Dockerfile | xargs -n 1 dirname | uniq | cut -d '/' -f 2 | grep -v 'TEMPLATE' | grep -v 'al-service-with-py11' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+      - name: Print services with Dockerfiles
+        run: |
+          echo "Services with Dockerfiles: ${{ steps.services.outputs.services }}"
+    outputs:
+      services: ${{ steps.services.outputs.services }}
+  build-containers:
+    needs: discover-services
+    runs-on: ubuntu-latest
+    if: needs.discover-services.outputs.services != '[]'
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.discover-services.outputs.services) }}
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: ${{ matrix.service }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check if the current version has already been pushed
+        id: check-if-pushed
+        run: |
+          export GHCR_TOKEN=$(echo ${{ secrets.GITHUB_TOKEN }} | base64)
+          export TAG=$BASE_TAG$(cat VERSION)
+          echo manifest=test >> $GITHUB_OUTPUT
+      - name: Data for release
+        if: steps.check-if-pushed.outputs.manifest
+        # echo kam193/$(make print):$TAG >> output.txt
+        run: |
+          echo ${{ matrix.service }} > service.txt
+          echo ${{ matrix.service }}-aaa > output.txt
+      - name: Upload artifact
+        if: steps.check-if-pushed.outputs.manifest
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.service }}
+          paths:
+            - service.txt
+            - output.txt
+  release:
+    needs: build-containers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          paths: ./artifacts
+      - name: Print artifacts
+        run: |
+          for file in $(ls -1 ./artifacts); do
+            output=$(cat ./artifacts/$file)
+            echo "Output from $file: $output"
+          done
