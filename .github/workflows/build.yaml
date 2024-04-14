@@ -55,16 +55,13 @@ jobs:
         if: steps.check-if-pushed.outputs.manifest
         # echo kam193/$(make print):$TAG >> output.txt
         run: |
-          echo ${{ matrix.service }} > service.txt
           echo ${{ matrix.service }}-aaa > output.txt
       - name: Upload artifact
         if: steps.check-if-pushed.outputs.manifest
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.service }}
-          paths:
-            - service.txt
-            - output.txt
+          paths: output.txt
   release:
     needs: build-containers
     runs-on: ubuntu-latest
