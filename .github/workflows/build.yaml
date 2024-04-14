@@ -86,7 +86,7 @@ jobs:
           if [[ -z "release_text.txt" ]]; then
             echo "release=false" >> $GITHUB_OUTPUT
           else
-            echo "release=true" >> $GITHUB_OUTPUT
+            echo "release=false" >> $GITHUB_OUTPUT
           fi
       - name: Create release
         if: steps.check-if-release.outputs.release
