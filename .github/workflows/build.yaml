@@ -80,6 +80,15 @@ jobs:
             echo "## $service $BASE_TAG$(cat $service/VERSION)" >> release_text.txt
             echo "Following image was uploaded: $output" >> release_text.txt
           done
+      - name: Check done
+        id: check-if-release
+        run: |
+          if [[ -z "release_text.txt" ]]; then
+            echo "release=false" >> $GITHUB_OUTPUT
+          else
+            echo "release=true" >> $GITHUB_OUTPUT
+          fi
       - name: Create release
+        if: steps.check-if-release.outputs.release
         run:
           cat release_text.txt
