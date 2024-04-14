@@ -94,7 +94,7 @@ jobs:
         if: steps.check-if-release.outputs.release == 'true'
         uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
         with:
-          name: ${{ "Release on $CURRENT_DATE" }}
+          name: Release on ${{ env.CURRENT_DATE }}
           bodyFile: release_body.md
           makeLatest: true
-          tag: ${{ "release-$CURRENT_DATE" }}
+          tag: release-${{ env.CURRENT_DATE }}
