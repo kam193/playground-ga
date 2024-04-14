@@ -34,9 +34,6 @@ jobs:
     strategy:
       matrix:
         service: ${{ fromJson(needs.discover-services.outputs.services) }}
-    permissions:
-      contents: read
-      packages: write
     defaults:
       run:
         working-directory: ${{ matrix.service }}
@@ -68,6 +65,8 @@ jobs:
   release:
     needs: build-containers
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -77,18 +76,29 @@ jobs:
         run: |
           for service in $(ls -1 ./artifacts); do
             output=$(cat ./artifacts/$service/output.txt)
-            echo "## $service $BASE_TAG$(cat $service/VERSION)" >> release_text.txt
-            echo "Following image was uploaded: $output" >> release_text.txt
+            echo "## $service $BASE_TAG$(cat $service/VERSION)" >> release_text.md
+            echo "Following image was uploaded: $output" >> release_text.md
           done
       - name: Check done
         id: check-if-release
         run: |
-          if [[ -z "release_text.txt" ]]; then
+          if [[ -z "release_text.md" ]]; then
             echo "release=false" >> $GITHUB_OUTPUT
           else
-            echo "release=false" >> $GITHUB_OUTPUT
+            echo "This is an automated release. Following new service versions where uploaded" > release_body.md
+            cat release_text.md >> release_body.md
+            echo "release=true" >> $GITHUB_OUTPUT
+            echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
           fi
       - name: Create release
         if: steps.check-if-release.outputs.release == 'true'
         run:
           cat release_text.txt
+
+      - name: Release changes
+        if: steps.check-if-release.outputs.release == 'true'
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          name: Release on $CURRENT_DATE
+          bodyFile: release_body.md
+          makeLatest: true
