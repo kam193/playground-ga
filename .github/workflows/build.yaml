@@ -90,11 +90,6 @@ jobs:
             echo "release=true" >> $GITHUB_OUTPUT
             echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
           fi
-      - name: Create release
-        if: steps.check-if-release.outputs.release == 'true'
-        run:
-          cat release_text.txt
-
       - name: Release changes
         if: steps.check-if-release.outputs.release == 'true'
         uses: ncipollo/release-action@v1.13.0
