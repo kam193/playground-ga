@@ -75,7 +75,11 @@ jobs:
           path: ./artifacts
       - name: Print artifacts
         run: |
-          for file in $(ls -1 ./artifacts); do
-            output=$(cat ./artifacts/$file)
-            echo "Output from $file: $output"
+          for service in $(ls -1 ./artifacts); do
+            output=$(cat ./artifacts/$service/output.txt)
+            echo "## $service $BASE_TAG(cat $service/VERSION)" >> release_text.txt
+            echo "Following image was uploaded: $output" >> release_text.txt
           done
+      - name: Create release
+        run:
+          cat release_text.txt
