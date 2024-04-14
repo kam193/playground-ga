@@ -63,8 +63,8 @@ jobs:
         with:
           name: ${{ matrix.service }}
           path: |
-            output.txt
-            service.txt
+            ${{ matrix.service }}/output.txt
+            ${{ matrix.service }}/service.txt
   release:
     needs: build-containers
     runs-on: ubuntu-latest
