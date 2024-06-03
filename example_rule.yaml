@@ -1,9 +1,9 @@
 rules:
   - id: exec-call
     pattern: exec(...)
-    message: Executing code dynamically2
+    message: Executing code dynamically3
     severity: WARNING
     metadata:
-      revision: 2
+      revision: 3
     languages:
       - python
