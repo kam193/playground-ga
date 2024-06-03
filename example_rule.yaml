@@ -4,6 +4,6 @@ rules:
     message: Executing code dynamically3
     severity: WARNING
     metadata:
-      revision: 3
+      revision: 4
     languages:
       - python
