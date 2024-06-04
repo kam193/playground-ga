@@ -1,7 +1,7 @@
 rule ExampleRule
 {
     strings:
-        $my_text_string = "text herev3"
+        $my_text_string = "text herev4"
         $my_hex_string = { E2 34 A1 C8 23 FB }
 
     condition:
