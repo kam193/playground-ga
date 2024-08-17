@@ -19,7 +19,9 @@ jobs:
         with:
           repository: kam193/unsafe-examples
           path: tests/unsafe-examples
-          filter: samples2/
+          sparse-checkout: |
+            samples2/*
+          sparse-checkout-cone-mode: false
           persist-credentials: false
           ssh-key: ${{ secrets.UNSAFE_SAMPLES_SSH }}
       - name: List files
