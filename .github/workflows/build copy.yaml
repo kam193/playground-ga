@@ -1,0 +1,28 @@
+name: download-test-artifacts
+run-name: Downloading test artifacts
+on:
+  push:
+
+env:
+  BASE_IMAGE: cccs/assemblyline-v4-service-base:4.5.stable
+  REGISTRY: ghcr.io
+  PUSH_REGISTRY: ghcr.io
+  BASE_TAG: 4.5.0.stable
+  MANIFEST_REGISTRY: ghcr.io/
+
+jobs:
+  get-test-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: kam193/unsafe-examples
+          path: tests/unsafe-examples
+          filter: samples2/
+          persist-credentials: false
+          ssh-key: ${{ secrets.UNSAFE_SAMPLES_SSH }}
+      - name: List files
+        run: |
+          ls -l
+          ls -l tests/unsafe-examples
